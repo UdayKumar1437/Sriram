@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penske Webservices</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: "Roboto", sans-serif;
+            /* font-weight: 900; */
+            /* font-style: italic; */
+        }
+
+        /* Global styles */
+        body {
+            background-color: #17202a;
+            /* Dark background */
+            text-align: center;
+            /* Center the heading horizontally */
+            margin: 0;
+            /* Remove default margin */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #heading {
+            color: #fff;
+            /* White text color */
+            margin-top: 20px;
+            /* Add margin to move the heading down */
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            /* Full height */
+            background-color: #000;
+            /* Sidebar background color */
+            color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+            scrollbar-width: thin;
+            /* Firefox */
+            scrollbar-color: transparent transparent;
+            /* Firefox */
+            transform: translateX(-200px);
+            /* Initially hide sidebar */
+            transition: transform 0.5s ease-in-out;
+            /* Transition effect */
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 0;
+            /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+            /* Show sidebar */
+        }
+
+        /* Toggle icon styles */
+        .toggle-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .toggle-icon span {
+            display: block;
+            width: 15px;
+            height: 2px;
+            background-color: #fff;
+            margin-bottom: 5px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .toggle-icon.open span {
+            transform: rotate(45deg);
+        }
+
+        .toggle-icon.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .toggle-icon.open span:nth-child(3) {
+            transform: rotate(-45deg);
+        }
+
+        /* Sidebar content styles */
+        .sidebar-content {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .sidebar.open .sidebar-content {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Sidebar menu styles */
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .sidebar-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .dashboard a {
+            height: 70px !important;
+            width: 200px;
+        }
+
+        .menu-item {
+            list-style: none
+        }
+
+        .sidebar-menu a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .sidebar-menu a:hover {
+            color: #ccc;
+        }
+
+        /* Subcategory styles */
+        .subcategory {
+            list-style-type: square;
+            /* Bullet points for subcategories */
+            padding-left: 25px;
+            /* Indent subcategories for tree structure */
+            /* Allow subcategories to wrap onto the next line */
+            display: none;
+            width: 90px;
+            margin-left: 50px;
+            /* Hide subcategories by default */
+        }
+
+        .subcategory.show {
+            display: block;
+            /* Show subcategories when activated */
+        }
+
+        /* Dashboard styles */
+        .dashboard {
+            display: none;
+            /* Hide by default */
+            justify-content: flex-center;
+            /* Align items to the start */
+            align-items: flex-start;
+            /* Align items to the start */
+            flex-wrap: wrap;
+            /* Allow buttons to wrap onto the next line */
+            height: 30vh;
+            /* Full height */
+            margin-left: 300px;
+            /* Add margin for the width of the sidebar */
+            padding: 20px;
+            /* Add padding around the dashboard */
+            /* overflow-y: auto; */
+            /* Allow scrolling if content exceeds the height */
+        }
+
+        .dashboard.show {
+            display: flex;
+            /* Show the dashboard when activated */
+        }
+
+        /* Button styles */
+        .dashboard a {
+            margin-top: 100px !important ;
+            display: flex;
+            align-items: center;
+            /* Align image and text in the center */
+            margin: 5px;
+            /* Set margin for spacing */
+            padding: 0px 10px;
+            /* Padding for the button */
+            height: 40px;
+            /* Set a specific height for the buttons */
+            border: none;
+            background-color: #424949;
+            /* Button background color */
+            color: #fff;
+            text-decoration: none;
+            /* Remove underline from link */
+            border-radius: 5px;
+            /* Optional: add rounded corners */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            /* Smooth transition on hover */
+
+        }
+
+        .dashboard a:hover {
+            background-color: #555;
+            /* Change color on hover */
+        }
+
+        .button-icon {
+            width: 24px;
+            /* Set image width */
+            height: 24px;
+            /* Set image height */
+            margin-right: 10px;
+            /* Space between image and text */
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="heading">Penske Webservices</h1>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="toggle-icon" id="toggle-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="sidebar-content">
+            <h2>Menu</h2>
+            <ul class="sidebar-menu" style="overflow: auto; height: 100vh;">
+                <li><a href="#" class="menu-item menu-home active" data-dashboard="home-dashboard">Home</a></li>
+                <li><a href="#" class="menu-item" data-dashboard="monitoring-dashboard">Monitoring Tools</a></li>
+                <li><a href="#" class="menu-item" data-dashboard="wiki-dashboard">Wiki</a></li>
+                <li><a href="#" class="menu-item" data-dashboard="tools-dashboard">Tools</a></li>
+                <li>
+                    <a href="#" class="menu-item parent" id="websphere-link">Websphere</a>
+                    <ul class="subcategory" id="websphere-subcategories">
+                        <li><a href="#" class="menu-item" data-dashboard="websphere-prod-dashboard">Prod</a></li>
+                        <li><a href="#" class="menu-item" data-dashboard="websphere-qa-dashboard">QA</a></li>
+                        <li><a href="#" class="menu-item" data-dashboard="websphere-dev-dashboard">Dev</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="menu-item parent" id="openshift-link">Openshift</a>
+                    <ul class="subcategory" id="openshift-subcategories">
+                        <li><a href="#" class="menu-item" data-dashboard="openshift-prod-dashboard">Prod</a></li>
+                        <li><a href="#" class="menu-item" data-dashboard="openshift-qa-dashboard">QA</a></li>
+                        <li><a href="#" class="menu-item" data-dashboard="openshift-dev-dashboard">Dev</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="menu-item" data-dashboard="vmware-dashboard">Vmware</a></li>
+                <li><a href="#" class="menu-item" data-dashboard="ltm-dashboard">Ltm's/Gtm's</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Individual Dashboards -->
+    <div class="dashboard" id="home-dashboard">
+
+    </div>
+
+    <div class="dashboard" id="monitoring-dashboard">
+        <a href="https://penske.logicmonitor.com/santaba/saml/login" target="_blank">
+            <img src="https://images.saasworthy.com/logicmonitor_8857_logo_1654242285_lpzgc.png" alt="Monitoring Tool 1"
+                class="button-icon">
+            Logic Monitor
+        </a>
+        <a href="https://asm.saas.broadcom.com/en/settings.php" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWapIxvx0wqQ46S7MkgdDsfeHm9j2ZLZw1cw&s"
+                alt="Monitoring Tool 2" class="button-icon">
+            CA Monitor
+        </a>
+        <a href="http://sitescope.penske.com/SiteScope" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGZja3bIHlnjPJg7gwO90IpP8hCW069nwFZg&s"
+                alt="Monitoring Tool 1" class="button-icon">
+            Sitescope
+        </a>
+        <a href="https://jira.penske.com/projects/ITDSW/issues/" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDXh1wNyyr94CzZwQQG-tSQgJ7RhP_TyMgPw&s"
+                alt="Monitoring Tool 1" class="button-icon">
+            Jira
+        </a>
+        <a href="https://penske.logicmonitor.com/santaba/saml/login" target="_blank">
+            <img src="https://images.saasworthy.com/logicmonitor_8857_logo_1654242285_lpzgc.png" alt="Monitoring Tool 1"
+                class="button-icon">
+            Logic Monitor
+        </a>
+        <a href="https://asm.saas.broadcom.com/en/settings.php" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWapIxvx0wqQ46S7MkgdDsfeHm9j2ZLZw1cw&s"
+                alt="Monitoring Tool 2" class="button-icon">
+            CA Monitor
+        </a>
+        <a href="http://sitescope.penske.com/SiteScope" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGZja3bIHlnjPJg7gwO90IpP8hCW069nwFZg&s"
+                alt="Monitoring Tool 1" class="button-icon">
+            Sitescope
+        </a>
+        <a href="https://jira.penske.com/projects/ITDSW/issues/" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDXh1wNyyr94CzZwQQG-tSQgJ7RhP_TyMgPw&s"
+                alt="Monitoring Tool 1" class="button-icon">
+            Jira
+        </a>
+
+
+    </div>
+
+    <div class="dashboard" id="wiki-dashboard">
+        <a href="https://confluence.penske.com/" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-RcPatlgtnhO2JXsMXS2t5_Yr3_SVk721qA&s"
+                alt="Wiki Button 1" class="button-icon">
+            Confluence
+        </a>
+        <a href="https://confluence.penske.com/display/WSSD/Server+Definitions" target="_blank">
+            <img src="https://static.vecteezy.com/system/resources/previews/005/370/010/original/server-data-logo-server-repair-logo-vector.jpg"
+                class="button-icon">
+            Server Definitions
+        </a>
+        <a href="http://ghlx192ptlge.penske.com/serverconfigs/ilos.html" target="_blank">
+            <img src="https://learningtechnix.wordpress.com/wp-content/uploads/2017/09/unnamed.png" alt="Wiki Button 2"
+                class="button-icon">
+            ILO's
+        </a>
+        <a href="https://confluence.penske.com/display/WSSD/Web+Config" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/6671/6671901.png" alt="Wiki Button 2" class="button-icon">
+            Web Config
+        </a>
+        <a href="https://bitbucket.penske.com/projects/WEBSC/repos/inventories/browse/master" target="_blank">
+            <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/44_Bitbucket_logo_logos-512.png"
+                alt="Wiki Button 2" class="button-icon">
+            Bitbucket Master List
+        </a>
+    </div>
+
+    <div class="dashboard" id="tools-dashboard">
+        <a href="https://myworkspace.gopenske.com/Citrix/StoreWeb/#/home" target="_blank">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpbi1FeCb1Fgzm7iF3Llhw4vO9-O-x-CjeZ32ZSuPpSFuFjqmLudIIBrEcMNFH55DlIjA&usqp=CAU"
+                alt="Image 1" class="button-icon">
+            Citrix
+        </a>
+
+        <a href="https://login.penske.com/" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/5087/5087579.png" alt="Image 2" class="button-icon">
+            Login
+        </a>
+        <a href="https://www.tool1.com" target="_blank">
+            <img src="path_to_image_tool1.jpg" alt="Tool Button 1" class="button-icon">
+            Tool Button 1
+        </a>
+        <a href="https://www.tool2.com" target="_blank">
+            <img src="path_to_image_tool2.jpg" alt="Tool Button 2" class="button-icon">
+            Tool Button 2
+        </a>
+        <a href="https://www.tool3.com" target="_blank">
+            <img src="path_to_image_tool1.jpg" alt="Tool Button 3" class="button-icon">
+            Tool Button 3
+        </a>
+        <a href="https://www.tool4.com" target="_blank">
+            <img src="path_to_image_tool1.jpg" alt="Tool Button 4" class="button-icon">
+            Tool Button 4
+        </a>
+        <a href="https://www.tool4.com" target="_blank">
+            <img src="path_to_image_tool1.jpg" alt="Tool Button 4" class="button-icon">
+            Tool Button 4
+        </a>
+        <a href="https://www.tool4.com" target="_blank">
+            <img src="path_to_image_tool1.jpg" alt="Tool Button 4" class="button-icon">
+            Tool Button 4
+        </a>
+        <a href="https://www.tool4.com" target="_blank">
+            <img src="path_to_image_tool1.jpg" alt="Tool Button 4" class="button-icon">
+            Tool Button 4
+        </a>
+    </div>
+    <div class="dashboard" id="websphere-prod-dashboard">
+        <a href="https://www.websphere-prod.com" target="_blank">
+            <img src="path_to_image_websphere_prod.jpg" alt="Websphere Prod" class="button-icon">
+            Websphere Prod Button
+        </a>
+    </div>
+
+    <div class="dashboard" id="websphere-qa-dashboard">
+        <a href="https://www.websphere-qa.com" target="_blank">
+            <img src="path_to_image_websphere_qa.jpg" alt="Websphere QA" class="button-icon">
+            Websphere QA Button
+        </a>
+    </div>
+
+    <div class="dashboard" id="websphere-dev-dashboard">
+        <a href="https://www.websphere-dev.com" target="_blank">
+            <img src="path_to_image_websphere_dev.jpg" alt="Websphere Dev" class="button-icon">
+            Websphere Dev Button
+        </a>
+    </div>
+
+    <!-- Openshift Subcategory Dashboards -->
+    <div class="dashboard" id="openshift-prod-dashboard">
+        <a href="https://www.openshift-prod.com" target="_blank">
+            <img src="path_to_image_openshift_prod.jpg" alt="Openshift Prod" class="button-icon">
+            Openshift Prod Button
+        </a>
+    </div>
+
+    <div class="dashboard" id="openshift-qa-dashboard">
+        <a href="https://www.openshift-qa.com" target="_blank">
+            <img src="path_to_image_openshift_qa.jpg" alt="Openshift QA" class="button-icon">
+            Openshift QA Button
+        </a>
+    </div>
+
+    <div class="dashboard" id="openshift-dev-dashboard">
+        <a href="https://www.openshift-dev.com" target="_blank">
+            <img src="path_to_image_openshift_dev.jpg" alt="Openshift Dev" class="button-icon">
+            Openshift Dev Button
+        </a>
+    </div>
+
+    <div class="dashboard" id="vmware-dashboard">
+        <a href="https://www.vmware1.com" target="_blank">
+            <img src="path_to_image_vmware1.jpg" alt="Vmware Button 1" class="button-icon">
+            Vmware Button 1
+        </a>
+        <a href="https://www.vmware2.com" target="_blank">
+            <img src="path_to_image_vmware2.jpg" alt="Vmware Button 2" class="button-icon">
+            Vmware Button 2
+        </a>
+    </div>
+
+    <div class="dashboard" id="ltm-dashboard">
+        <a href="https://www.ltm1.com" target="_blank">
+            <img src="path_to_image_ltm1.jpg" alt="Ltm's Button 1" class="button-icon">
+            Ltm's Button 1
+        </a>
+        <a href="https://www.ltm2.com" target="_blank">
+            <img src="path_to_image_ltm2.jpg" alt="Ltm's Button 2" class="button-icon">
+            Ltm's Button 2
+        </a>
+    </div>
+
+
+
+    <script>
+        // Select the heading and menu items
+        const heading = document.getElementById('heading');
+        const homeMenuItem = document.querySelector('.menu-home'); // Assuming 'menu-home' is the class for Home menu item
+
+        // Function to check if it's the home page
+        function checkIfHomePage() {
+            // Assuming the Home menu item has an active class or some identifier
+            const isHomePage = homeMenuItem.classList.contains('active'); // Change this if needed based on your logic
+            if (isHomePage) {
+                heading.classList.remove('hidden'); // Show heading on Home
+            } else {
+                heading.classList.add('hidden'); // Hide heading on other pages
+            }
+        }
+
+        // Call the function on initial load
+        checkIfHomePage();
+        const sidebar = document.querySelector('.sidebar');
+        const toggleIcon = document.querySelector('#toggle-icon');
+
+        // Add event listener to the toggle icon
+        toggleIcon.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Function to handle menu clicks and show/hide the heading
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function () {
+                if (this.classList.contains('menu-home')) {
+                    heading.classList.remove('hidden'); // Show heading on Home
+                } else {
+                    heading.classList.add('hidden'); // Hide heading on other pages
+                }
+            });
+        });
+
+
+        // Function to handle dashboard display
+        const menuItems = document.querySelectorAll('.menu-item');
+        const dashboards = document.querySelectorAll('.dashboard');
+
+
+        menuItems.forEach(item => {
+            console.log(item)
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                // Hide all dashboards
+                dashboards.forEach(dashboard => {
+                    dashboard.classList.remove('show');
+                });
+
+                // Show the selected dashboard
+                const dashboardId = item.getAttribute('data-dashboard');
+                if (dashboardId) {
+                    document.getElementById(dashboardId).classList.add('show');
+                }
+
+                // Toggle subcategories
+                if (item.classList.contains('parent')) {
+                    const subcategory = item.nextElementSibling;
+                    const isVisible = subcategory.style.display === 'block';
+                    subcategory.style.display = isVisible ? 'none' : 'block';
+                }
+            });
+        });
+
+        // Show the home dashboard by default
+        document.getElementById('home-dashboard').classList.add('show');
+
+    </script>
+</body>
+
+</html>
